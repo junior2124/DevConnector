@@ -171,6 +171,34 @@ router.post(
   }
 );
 
+// @route   GET api/profile/experience/:_id
+// @desc    Get experience by experience ID
+// @access  Private
+router.get(
+  "/experience/:_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        // Get index
+        const expIndex = profile.experience
+          .map(item => item.id)
+          .indexOf(req.params._id);
+
+        if (expIndex < 0) {
+          errors.noexperience = "There is no experience for this user";
+          res.status(404).json(errors);
+        }
+
+        // return experience by index
+        res.json(profile.experience[expIndex]);
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
 // @route   POST api/profile/experience
 // @desc    Add experience to profile
 // @access  Private
