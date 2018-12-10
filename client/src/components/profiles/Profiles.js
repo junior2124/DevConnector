@@ -17,7 +17,7 @@ class Profiles extends Component {
     if (profiles === null || loading) {
       profileItems = <Spinner />;
     } else {
-      if (profiles.length > 0) {
+      if (profiles && profiles.length > 0) {
         profileItems = profiles.map(profile => (
           <ProfileItem key={profile._id} profile={profile} />
         ));

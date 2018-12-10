@@ -7,6 +7,11 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "users"
   },
+  handle: {
+    type: String,
+    required: true,
+    max: 40
+  },
   text: {
     type: String,
     require: true
@@ -30,6 +35,11 @@ const PostSchema = new Schema({
       user: {
         type: Schema.Types.ObjectId,
         ref: "users"
+      },
+      handle: {
+        type: String,
+        required: true,
+        max: 40
       },
       text: {
         type: String,
