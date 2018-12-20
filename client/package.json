@@ -27,6 +27,9 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "files": [
+    "auto.js"
+  ],
   "browserslist": [
     ">0.2%",
     "not dead",
