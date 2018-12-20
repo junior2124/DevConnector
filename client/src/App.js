@@ -80,6 +80,7 @@ class App extends Component {
                   component={EditProfile}
                 />
               </Switch>
+              {/* This should work */}
               <Switch>
                 <PrivateRoute
                   exact
