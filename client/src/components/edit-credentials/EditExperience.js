@@ -45,11 +45,42 @@ class EditExperience extends Component {
       experience.company = !isEmpty(experience.company)
         ? experience.company
         : "";
+      experience.location = !isEmpty(experience.location)
+        ? experience.location
+        : "";
+      const splitFrom = !isEmpty(experience.from)
+        ? experience.from.split("T")
+        : "";
+      experience.from = !isEmpty(splitFrom[0]) ? splitFrom[0] : "";
+      const splitTo = !isEmpty(experience.to) ? experience.to.split("T") : "";
+      experience.to = !isEmpty(splitTo) ? splitTo[0] : "";
+      if (!isEmpty(experience.current) && experience.current) {
+        var today = new Date(),
+          date =
+            today.getFullYear() +
+            "-" +
+            (today.getMonth() + 1) +
+            "-" +
+            today.getDate();
+        experience.to = date;
+      }
+      experience.current = !isEmpty(experience.current)
+        ? experience.current
+        : "";
+      experience.description = !isEmpty(experience.description)
+        ? experience.description
+        : "";
 
       // Set component fields state
       this.setState({
         title: experience.title,
-        company: experience.company
+        company: experience.company,
+        location: experience.location,
+        from: experience.from,
+        to: experience.to,
+        current: experience.current,
+        disabled: experience.current,
+        description: experience.description
       });
     }
   }
@@ -75,9 +106,18 @@ class EditExperience extends Component {
   }
 
   onCheck(e) {
+    var today = new Date(),
+      date =
+        today.getFullYear() +
+        "-" +
+        (today.getMonth() + 1) +
+        "-" +
+        today.getDate();
+
     this.setState({
       disabled: !this.state.disabled,
-      current: !this.state.current
+      current: !this.state.current,
+      to: date
     });
   }
 
