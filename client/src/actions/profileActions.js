@@ -65,7 +65,7 @@ export const createProfile = (profileData, history) => dispatch => {
 export const getExperience = id => dispatch => {
   dispatch(setProfileLoading());
   axios
-    .get(`/api/profile/experience/${id}`)
+    .get(`/api/profile/experience${id}`)
     .then(res =>
       dispatch({
         type: GET_EXPERIENCE,
