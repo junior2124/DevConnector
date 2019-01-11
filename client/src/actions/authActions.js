@@ -1,14 +1,74 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
-
-import { GET_ERRORS, SET_CURRENT_USER } from "./types";
+import { default as UUID } from "node-uuid";
+import {
+  GET_ERRORS,
+  SET_CURRENT_USER,
+  GET_CURRENT_USER,
+  SET_NEW_PW,
+  SEND_FP_EMAIL
+} from "./types";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
   axios
     .post("/api/users/register", userData)
     .then(res => history.push("/login"))
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+// UserExists - Checks to see if email exists
+export const userEmailExists = userData => dispatch => {
+  axios
+    .post("/api/users/userexists", userData)
+    .then(res =>
+      dispatch({
+        type: SEND_FP_EMAIL,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
+};
+
+// Get User by XID
+export const getUserByXid = id => dispatch => {
+  axios
+    .get(`/api/users/finduserbyxid/${id}`)
+    .then(res =>
+      dispatch({
+        type: GET_CURRENT_USER,
+        payload: res.data
+      })
+    )
+    .catch(err =>
+      dispatch({
+        type: GET_CURRENT_USER,
+        payload: null
+      })
+    );
+};
+
+// UserPWUpdate - Updates User Password
+export const userPWUpdate = userData => dispatch => {
+  axios
+    .post("/api/users/userFPC", userData)
+    .then(res =>
+      dispatch({
+        type: SET_NEW_PW,
+        payload: res.data
+      })
+    )
     .catch(err =>
       dispatch({
         type: GET_ERRORS,

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
@@ -79,6 +80,7 @@ class Login extends Component {
                   error={errors.password}
                 />
                 <input type="submit" className="btn btn-info btn-block mt-4" />
+                <Link to={`/forgotpassword/`}>Forgot password?</Link>
               </form>
             </div>
           </div>

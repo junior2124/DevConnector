@@ -5,12 +5,18 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const keys = require("../../config/keys");
 const passport = require("passport");
+const UUID = require("node-uuid");
 
 // Load Input Validation
 const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
+const validateChangePWInput = require("../../validation/changepassword");
+
+// Load NodeMailer
+const userPasswordResetEmail = require("../../nodeMailer/sendEmail");
 
 const User = require("../../models/User");
+const ForgotEmail = require("../../models/ForgotEmail");
 
 // @route   GET api/users/test
 // @desc    Tests users route
@@ -111,6 +117,115 @@ router.post("/login", (req, res) => {
       }
     });
   });
+});
+
+// @route   GET api/users/finduserbyxid/:id
+// @desc    Get user by xid
+// @access  Public
+router.get("/finduserbyxid/:id", (req, res) => {
+  ForgotEmail.findOne({ token: req.params.id })
+    .then(forgotEmail =>
+      res.json({
+        id: forgotEmail.userId,
+        name: forgotEmail.name,
+        email: forgotEmail.email
+      })
+    )
+    .catch(err =>
+      res.status(404).json({ nouserfound: "No user found with that ID" })
+    );
+});
+
+// @route   GET api/users/userexists
+// @desc    User / Returning message
+// @access  Public
+router.post("/userexists", (req, res) => {
+  const email = req.body.email;
+
+  // Find the user by email
+  User.findOne({ email }).then(user => {
+    // Check for user
+    if (!user) {
+      let errors = {};
+      errors.success = false;
+      errors.email = "User not found";
+      return res.status(404).json(errors);
+    } else {
+      const xid = UUID.v4();
+      const data = { email, xid };
+      userPasswordResetEmail(data);
+
+      var queryDelete = { userId: user.id };
+      ForgotEmail.deleteMany(queryDelete)
+        .then(email => {
+          if (!email) {
+            return res.status(404).json();
+          }
+        })
+        .catch(err => res.status(400).json(err));
+
+      const newForgotEmail = new ForgotEmail({
+        userId: user.id,
+        name: user.name,
+        email,
+        token: xid
+      });
+
+      newForgotEmail
+        .save()
+        .then(forgotemail =>
+          res.json({ success: true }).catch(err => console.log(err))
+        );
+    }
+  });
+});
+
+// @route   POST api/users/userFPC/:id
+// @desc    Edit user PW
+// @access  Private
+router.post("/userFPC", (req, res) => {
+  const { errors, isValid } = validateChangePWInput(req.body);
+
+  // Check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  // Get fields
+  const userFields = {};
+  if (req.body.password) userFields.password = req.body.password;
+
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(userFields.password, salt, (err, hash) => {
+      if (err) throw err;
+      userFields.password = hash;
+    });
+  });
+
+  User.findOne({ _id: req.body.id })
+    .then(user => {
+      if (user) {
+        // Update
+        User.findOneAndUpdate(
+          { _id: req.body.id },
+          { $set: userFields },
+          { new: true }
+        ).then(user =>
+          res.json({
+            success: true,
+            id: user.Id,
+            name: user.name,
+            email: user.email,
+            updatedPW: true
+          })
+        );
+      } else {
+        res.status(404).json({ nouserfound: "No user found." });
+      }
+    })
+    .catch(err =>
+      res.status(404).json({ nouserfound: "No user found with that ID" })
+    );
 });
 
 // @route   GET api/users/current
