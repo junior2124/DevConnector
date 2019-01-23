@@ -209,7 +209,7 @@ router.post("/userFPC", (req, res) => {
         User.findOneAndUpdate(
           { _id: req.body.id },
           { $set: userFields },
-          { new: false }
+          { new: true }
         ).then(user =>
           res.json({
             success: true,
