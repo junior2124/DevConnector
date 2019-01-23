@@ -142,7 +142,7 @@ router.get("/finduserbyxid/:id", (req, res) => {
 router.post("/userexists", (req, res) => {
   const email = req.body.email;
 
-  // Find the user by email
+  // Find the user by email.
   User.findOne({ email }).then(user => {
     // Check for user
     if (!user) {
