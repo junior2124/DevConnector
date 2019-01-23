@@ -199,7 +199,6 @@ router.post("/userFPC", (req, res) => {
     bcrypt.hash(userFields.password, salt, (err, hash) => {
       if (err) throw err;
       userFields.password = hash;
-      console.log(hash + " " + userFields.password);
     });
   });
 
@@ -210,7 +209,7 @@ router.post("/userFPC", (req, res) => {
         User.findOneAndUpdate(
           { _id: req.body.id },
           { $set: userFields },
-          { new: true }
+          { new: false }
         ).then(user =>
           res.json({
             success: true,
