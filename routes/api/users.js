@@ -208,7 +208,7 @@ router.post("/userFPC", (req, res) => {
         // Update
         User.findOneAndUpdate(
           { _id: req.body.id },
-          { passport: userFields.password },
+          { password: userFields.password },
           { new: true }
         ).then(user =>
           res.json({
