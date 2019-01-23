@@ -205,6 +205,18 @@ router.post("/userFPC", (req, res) => {
   User.findOne({ _id: req.body.id })
     .then(user => {
       if (user) {
+        user.pre("save", function(next) {
+          var SALT_FACTOR = 10;
+
+          bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
+            bcrypt.hash(userFields.password, salt, null, function(err, hash) {
+              if (err) return next();
+              userFields.password = hash;
+              next();
+            });
+          });
+        });
+
         // Update
         User.findOneAndUpdate(
           { _id: req.body.id },
