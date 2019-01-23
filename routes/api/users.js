@@ -193,7 +193,7 @@ router.post("/userFPC", (req, res) => {
 
   // Get fields
   const userFields = {};
-  if (req.body.password) userFields.password = req.body.password + "123";
+  if (req.body.password) userFields.password = req.body.password;
 
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(userFields.password, salt, (err, hash) => {
