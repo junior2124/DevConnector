@@ -199,6 +199,7 @@ router.post("/userFPC", (req, res) => {
     bcrypt.hash(userFields.password, salt, (err, hash) => {
       if (err) throw err;
       userFields.password = hash;
+      console.log(hash + " " + userFields.password);
     });
   });
 
