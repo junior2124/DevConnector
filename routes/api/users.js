@@ -214,8 +214,7 @@ router.post("/userFPC", (req, res) => {
                 id: user.Id,
                 name: user.name,
                 email: user.email,
-                updatedPW: true,
-                test: userFields
+                updatedPW: true
               })
             );
           } else {
