@@ -195,12 +195,12 @@ router.post("/userFPC", (req, res) => {
   const userFields = {};
   if (req.body.password) userFields.password = req.body.password;
 
-  // bcrypt.genSalt(10, (err, salt) => {
-  //   bcrypt.hash(userFields.password, salt, (err, hash) => {
-  //     if (err) throw err;
-  //     userFields.password = hash;
-  //   });
-  // });
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(userFields.password, salt, (err, hash) => {
+      if (err) throw err;
+      userFields.password = hash;
+    });
+  });
 
   User.findOne({ _id: req.body.id })
     .then(user => {
