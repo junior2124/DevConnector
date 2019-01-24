@@ -199,34 +199,34 @@ router.post("/userFPC", (req, res) => {
     bcrypt.hash(userFields.password, salt, (err, hash) => {
       if (err) throw err;
       userFields.password = hash;
+
+      User.findOne({ _id: req.body.id })
+        .then(user => {
+          if (user) {
+            // Update
+            User.findOneAndUpdate(
+              { _id: req.body.id },
+              { password: userFields.password },
+              { new: true }
+            ).then(user =>
+              res.json({
+                success: true,
+                id: user.Id,
+                name: user.name,
+                email: user.email,
+                updatedPW: true,
+                test: userFields
+              })
+            );
+          } else {
+            res.status(404).json({ nouserfound: "No user found." });
+          }
+        })
+        .catch(err =>
+          res.status(404).json({ nouserfound: "No user found with that ID" })
+        );
     });
   });
-
-  User.findOne({ _id: req.body.id })
-    .then(user => {
-      if (user) {
-        // Update
-        User.findOneAndUpdate(
-          { _id: req.body.id },
-          { password: userFields.password },
-          { new: true }
-        ).then(user =>
-          res.json({
-            success: true,
-            id: user.Id,
-            name: user.name,
-            email: user.email,
-            updatedPW: true,
-            test: userFields
-          })
-        );
-      } else {
-        res.status(404).json({ nouserfound: "No user found." });
-      }
-    })
-    .catch(err =>
-      res.status(404).json({ nouserfound: "No user found with that ID" })
-    );
 });
 
 // @route   GET api/users/current
