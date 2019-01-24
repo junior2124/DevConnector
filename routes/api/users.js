@@ -193,13 +193,12 @@ router.post("/userFPC", (req, res) => {
 
   // Get fields
   const userFields = {};
-  const testing = {};
   if (req.body.password) userFields.password = req.body.password;
 
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(userFields.password, salt, (err, hash) => {
       if (err) throw err;
-      testing.password = hash;
+      userFields.password = hash;
     });
   });
 
@@ -209,7 +208,7 @@ router.post("/userFPC", (req, res) => {
         // Update
         User.findOneAndUpdate(
           { _id: req.body.id },
-          { password: testing.password },
+          { password: userFields.password },
           { new: true }
         ).then(user =>
           res.json({
